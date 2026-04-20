@@ -30,9 +30,19 @@ class Settings(BaseSettings):
     kafka_servers: str = "localhost:9092"
 
     # ── Auth ───────────────────────────────────────────────────
-    jwt_secret: str = "change-me-in-production"
+    # Must be supplied via JWT_SECRET env var. Empty default prevents
+    # an insecure hardcoded value shipping to any environment.
+    jwt_secret: str = ""
     jwt_algorithm: str = "HS256"
     jwt_expiry_minutes: int = 60
+
+    def require_jwt_secret(self) -> str:
+        if not self.jwt_secret or len(self.jwt_secret) < 16:
+            raise RuntimeError(
+                "JWT_SECRET env var is required (>=16 chars). Generate with: "
+                "python -c 'import secrets; print(secrets.token_urlsafe(32))'"
+            )
+        return self.jwt_secret
 
 
 @lru_cache
