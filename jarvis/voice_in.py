@@ -36,3 +36,6 @@ class SpeechInput:
             return None
         except sr.RequestError:
             return None
+        except (ConnectionResetError, ConnectionError, TimeoutError, OSError):
+            # Transient network blips to Google STT. Treat as no-match.
+            return None

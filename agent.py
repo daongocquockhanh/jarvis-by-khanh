@@ -3,15 +3,17 @@ from config import get_settings
 from retriever import retrieve
 
 _settings = get_settings()
-client = anthropic.Anthropic(api_key=_settings.anthropic_api_key)
 
-SYSTEM_PROMPT = """You are a helpful Q&A assistant. Answer the user's question based on the provided context documents.
+
+def _get_client() -> "anthropic.Anthropic":
+    return anthropic.Anthropic(api_key=_settings.anthropic_api_key)
+
+SYSTEM_PROMPT = """You are JARVIS, a witty, concise AI assistant modeled after Tony Stark's JARVIS.
 
 Rules:
-- Only use information from the provided context to answer questions.
-- If the context doesn't contain enough information, say so clearly.
-- Reference which source document(s) your answer comes from.
-- Be concise and accurate."""
+- Prefer the provided context documents when the question relates to them, and cite the source.
+- For general questions outside the context, answer from your own knowledge.
+- Keep replies short and spoken-friendly (no markdown, no bullet lists)."""
 
 
 def build_context(chunks: list[dict]) -> str:
@@ -25,11 +27,11 @@ def build_context(chunks: list[dict]) -> str:
     return "\n\n".join(parts)
 
 
-def ask(question: str) -> str:
+def _ask_api(question: str) -> str:
     chunks = retrieve(question)
     context = build_context(chunks)
 
-    message = client.messages.create(
+    message = _get_client().messages.create(
         model=_settings.model_name,
         max_tokens=1024,
         system=SYSTEM_PROMPT,
@@ -42,3 +44,14 @@ def ask(question: str) -> str:
     )
 
     return message.content[0].text
+
+
+def ask(question: str) -> str:
+    backend = _settings.agent_backend.lower()
+    if backend == "claude_cli":
+        from agent_claude_cli import ask as _ask_cli
+
+        return _ask_cli(question)
+    if backend == "api":
+        return _ask_api(question)
+    raise ValueError(f"Unknown AGENT_BACKEND: {_settings.agent_backend!r}")
