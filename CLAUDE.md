@@ -1,6 +1,6 @@
 # agentic-bot
 
-JARVIS voice assistant + RAG agent. Target: Nexus Orchestrator (Kafka/Postgres/multi-tenant) per `ARCHITECTURE.md`. Orchestrator not yet built.
+JARVIS voice assistant + RAG agent + Nexus Orchestrator (Kafka/Postgres/multi-tenant) per `ARCHITECTURE.md`.
 
 ## Run
 
@@ -51,6 +51,6 @@ If unsure which skill applies, list relevant ones with `ls ~/.claude/skills/` an
 
 ## Current state
 
-- RAG agent: working (`agent.py`, `ingest.py`, `retriever.py`)
-- JARVIS voice: working but uncommitted (14 dirty files)
-- Orchestrator (Kafka/Postgres/Redis from ARCHITECTURE.md): not started
+- RAG agent: working, committed (`agent.py`, `ingest.py`, `retriever.py`). Two backends via `AGENT_BACKEND`: `claude_cli` (default in use) or `api`.
+- JARVIS voice: working, committed (`jarvis/`).
+- Orchestrator (`orchestrator/`): code complete per ARCHITECTURE.md (core loop, state store, event bus, decomposer, API, worker, schema.sql) but never run against live Kafka/Redis/Postgres. Unit tests exist for decomposer + models only.
