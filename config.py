@@ -32,6 +32,16 @@ class Settings(BaseSettings):
     documents_dir: str = os.path.join(os.path.dirname(__file__), "documents")
     chroma_persist_dir: str = os.path.join(os.path.dirname(__file__), "chroma_db")
 
+    # ── STT (speech-to-text) ───────────────────────────────────
+    # "whisper" = local faster-whisper (default). "google" = Google
+    # Web Speech API. Whisper falls back to Google if faster-whisper
+    # is not installed.
+    stt_backend: str = "whisper"
+    whisper_model_size: str = "base"  # tiny|base|small|medium|large-v3
+    whisper_device: str = "auto"      # auto|cpu|cuda
+    whisper_compute_type: str = "auto"  # auto|int8|float16|float32
+    whisper_language: str = "en"      # pin to skip language detection
+
     # ── Orchestrator infra ─────────────────────────────────────
     redis_url: str = "redis://localhost:6379/0"
     pg_dsn: str = "postgresql://localhost:5432/orchestrator"
