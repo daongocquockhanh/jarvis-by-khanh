@@ -29,11 +29,13 @@ class GoogleTranscriber:
             text = self._recognizer.recognize_google(audio)
         except sr.UnknownValueError:
             return None
-        except sr.RequestError:
-            logger.warning("Google STT request error")
+        except sr.RequestError as e:
+            logger.warning("Google STT request error: %s", e)
             return None
         except (ConnectionResetError, ConnectionError, TimeoutError, OSError):
-            # Transient network blips to Google STT. Treat as no-match.
+            # Socket-level errors from the recognize_google network call
+            # (incl. OSError subclasses like socket.gaierror when offline).
+            # Transient — treat as no-match rather than crashing the loop.
             return None
 
         text = (text or "").strip()
