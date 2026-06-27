@@ -18,6 +18,7 @@ JARVIS voice assistant + RAG agent + Nexus Orchestrator (Kafka/Postgres/multi-te
 - Voice mode: brain runs in **separate process** (`jarvis/brain_client.py` ↔ `jarvis/brain.py`). PyAudio + ChromaDB + claude-cli + macOS `say` crash each other if shared.
 - macOS fork-safety env vars required (set in `run.sh`): `OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES`, `TOKENIZERS_PARALLELISM=false`, `OMP_NUM_THREADS=1`.
 - Backend: claude-cli subprocess (`agent_claude_cli.py`), not direct API.
+- STT: local faster-whisper by default (`jarvis/stt_whisper.py`), Google Web Speech fallback (`jarvis/stt_google.py`). First `./run.sh voice` downloads the `base` model (~140MB) to `~/.cache/huggingface`; offline after that. Capture lives in `jarvis/voice_in.py`; transcription is swappable via `STT_BACKEND`.
 - Wake words include common mishearings (jarvus, service, harvest, etc).
 
 ## Skill routing
